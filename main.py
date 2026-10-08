@@ -5,6 +5,7 @@ from mediapipe.tasks.python import vision
 import time
 import math
 import pyautogui
+import sys, os
 
 pyautogui.PAUSE = 0
 pyautogui.FAILSAFE = False
@@ -52,8 +53,13 @@ def toggle_mode():
     if mode > 2:
         mode = 0
 
+def resource_path(rel):
+    base = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
+    return os.path.join(base, rel)
+
+
 vid = cv2.VideoCapture(0)
-base_options = python.BaseOptions(model_asset_path='hand_landmarker.task')
+base_options = python.BaseOptions(model_asset_path=resource_path('hand_landmarker.task'))
 options = vision.HandLandmarkerOptions(base_options=base_options,running_mode=vision.RunningMode.VIDEO,num_hands=1,min_hand_detection_confidence=hand_detection_confidence,min_tracking_confidence=tracking_confidence)
 detector = vision.HandLandmarker.create_from_options(options)
 
