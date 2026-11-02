@@ -11,6 +11,10 @@
 # Guesture Modes
 ## Scroll
 To scroll, you must **bring your thumb and index fingers in contact** and then **move your hand up and down**.
+<p align="center">
+  <img src="./assets/scroll.gif" alt="preview" width="350">
+</p>
+
 ## Mouse
 In mouse mode the mouse cursor moves with the **Mid point of your thumb and index finger**. You **tap the index finger and thumb to click** and you **hold the thumb and middle finger to stop movement** if you may want to adjust your hand.
 <p align="center">
