@@ -68,11 +68,16 @@ im_ratio = 0
 tm_ratio = 0
 ti_mid = (0,0)
 
+ti_contact = 0
+tm_contact = 0
+
 cv2.namedWindow("vid", cv2.WINDOW_NORMAL)
 
 while vid.isOpened():
     try:
         res,frame = vid.read()
+        if not res:
+            continue
         h, w, _ = frame.shape
         rgbimg = cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
         mpimg = mp.Image(image_format=mp.ImageFormat.SRGB, data=rgbimg)
@@ -119,10 +124,10 @@ while vid.isOpened():
                 
                 cv2.line(frame, (100,200),(100+int(del_ti_mid[0]),200),(0,255,0),10)
                 cv2.line(frame, (100,250),(100+int(del_ti_mid[1]),250),(0,255,0),10)
+                hold_mouse(ti_contact)
                 if abs(del_ti_mid[0]) > small_movement and abs(del_ti_mid[1]) > small_movement:
                     if not tm_contact:
                         pyautogui.moveRel((del_ti_mid[0]*sensitivity,del_ti_mid[1]*sensitivity))
-                    hold_mouse(ti_contact)
             elif mode == 2:
                 # im -> index-middle
                 im_fingerdist = distance(indexl,middlel)
@@ -138,17 +143,28 @@ while vid.isOpened():
             cv2.putText(frame, f"Score: {result.handedness[0][0].score}", (10, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
         if mode == 0:
             cv2.putText(frame, "Mode: Scroll", (10, 150), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+            cv2.putText(frame, "Hold thumb and index finger to activate scrolling", (550, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255*(ti_contact), 255*(not ti_contact)), 2)
+            cv2.putText(frame, "Move your hand up to scroll down", (550, 90), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 0), 2)
+            cv2.putText(frame, "Move your hand down to scroll up", (550, 120), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 0), 2)
         if mode == 1:
             cv2.putText(frame, "Mode: Mouse", (10, 150), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+            cv2.putText(frame, "Hold thumb and index finger to click", (640, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 255*(ti_contact and not tm_contact), 255*(not ti_contact or tm_contact)), 2)
+            cv2.putText(frame, "Hold thumb and middle finger", (640, 105), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 255*(tm_contact), 255*(not tm_contact)), 2)
+            cv2.putText(frame, "to pause and adjust hand", (640, 130), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 255*(tm_contact), 255*(not tm_contact)), 2)
         if mode == 2:
             cv2.putText(frame, "Mode: Zoom", (10, 150), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-        cv2.putText(frame, "Press P while keeping window in focus to change mode.", (10, 700), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+            cv2.putText(frame, "Hold thumb and index finger", (600, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255*(ti_contact), 255*(not ti_contact)), 2)
+            cv2.putText(frame, "to activate zoom.", (600, 80), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255*(ti_contact), 255*(not ti_contact)), 2)
+            cv2.putText(frame, "Move your middle finger away from index finger to zoom out", (600, 120), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 0), 2)
+            cv2.putText(frame, "Move your middle finger closer to index finger to zoom in", (600, 150), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 0), 2)
+        cv2.putText(frame, "Press 'p' while keeping window in focus to change mode.", (10, 680), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
         cv2.imshow("vid",frame)
     except Exception as e:
         print(e)
-    if cv2.waitKey(1) & 0xff==ord('q'):
+    key = cv2.waitKey(1) & 0xFF
+    if key == ord('q'):
         break
-    if cv2.waitKey(1) & 0xFF== ord('p'):
+    if key == ord('p'):
         toggle_mode()
         print(mode)
 
